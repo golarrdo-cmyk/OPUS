@@ -8,6 +8,7 @@ from aiogram.types import BotCommand
 from .config import load_config
 from .db import Database
 from .handlers import router
+from .runtime import check_anthropic_reachable, start_health_server
 from .vision import FoodRecognizer
 
 
@@ -16,6 +17,8 @@ async def main() -> None:
     cfg = load_config()
     db = Database(cfg.db_path)
     await db.connect()
+    await check_anthropic_reachable()
+    health = await start_health_server()
 
     bot = Bot(cfg.bot_token)
     dp = Dispatcher(db=db, cfg=cfg, recognizer=FoodRecognizer(cfg.model))
@@ -29,6 +32,8 @@ async def main() -> None:
     try:
         await dp.start_polling(bot)
     finally:
+        if health:
+            await health.cleanup()
         await db.close()
 
 

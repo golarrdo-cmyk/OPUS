@@ -99,3 +99,13 @@ async def test_recognizer_haiku_omits_unsupported_params():
     msgs = FakeMessages({"is_food": False, "dish": "", "items": [], "comment": ""})
     await FoodRecognizer("claude-haiku-4-5", fake_client(msgs)).analyze(b"x", "en")
     assert "effort" not in msgs.kwargs["output_config"] and "fallbacks" not in msgs.kwargs
+
+
+async def test_health_server(monkeypatch):
+    import aiohttp
+    from dietbot.runtime import start_health_server
+    monkeypatch.setenv("PORT", "18765")
+    runner = await start_health_server()
+    async with aiohttp.ClientSession() as s, s.get("http://127.0.0.1:18765/health") as r:
+        assert r.status == 200 and await r.text() == "ok"
+    await runner.cleanup()
