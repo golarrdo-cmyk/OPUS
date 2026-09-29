@@ -24,3 +24,16 @@ python -m dietbot
 pip install pytest pytest-asyncio
 python -m pytest -q
 ```
+
+## Размещение на сервере
+Нужен сервер **вне России** (например, локация Нидерланды или Германия):
+API Anthropic не принимает запросы с российских IP, а Telegram в России замедляют.
+
+```bash
+git clone -b claude/opus-5-5-github-check-69dpf2 https://github.com/golarrdo-cmyk/OPUS.git /tmp/opus
+sudo bash /tmp/opus/deploy/install.sh     # первый запуск создаст /opt/dietbot/.env
+sudo nano /opt/dietbot/.env                # вписать BOT_TOKEN и ANTHROPIC_API_KEY
+sudo bash /opt/dietbot/deploy/install.sh  # установит и запустит службу
+journalctl -u dietbot -f                   # живые логи
+```
+Повторный запуск `install.sh` обновляет бота до последней версии.

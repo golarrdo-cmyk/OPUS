@@ -1,0 +1,15 @@
+[Unit]
+Description=AI nutritionist Telegram bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=dietbot
+WorkingDirectory=/opt/dietbot
+EnvironmentFile=/opt/dietbot/.env
+ExecStart=/opt/dietbot/.venv/bin/python -m dietbot
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
